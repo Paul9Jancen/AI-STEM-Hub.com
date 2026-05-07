@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI-STEM Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-light: #eff6ff;
+      --blue-mid: #dbeafe;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --white: #ffffff;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --amber: #f59e0b;
+      --amber-light: #fffbeb;
+      --orange: #f97316;
+      --indigo: #4f46e5;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--slate-50);
+      color: var(--slate-900);
+      min-height: 100vh;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--slate-200);
+    }
+    .nav-inner {
+      max-width: 900px; margin: 0 auto; padding: 0 1.25rem;
+      height: 64px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      font-family: var(--font-display);
+      font-weight: 800; font-size: 1.2rem; color: var(--blue);
+      display: flex; align-items: center; gap: 0.4rem; text-decoration: none;
+    }
+    .nav-brand svg { fill: var(--blue); }
+    .nav-links { display: flex; gap: 0.5rem; }
+    .nav-btn {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.45rem 1rem; border-radius: 0.6rem;
+      border: none; cursor: pointer; font-family: var(--font-body);
+      font-weight: 600; font-size: 0.875rem; transition: all 0.18s;
+      color: var(--slate-600); background: transparent;
+    }
+    .nav-btn:hover { background: var(--slate-100); }
+    .nav-btn.active { background: var(--blue); color: var(--white); box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+    .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 0.4rem; }
+    .mobile-nav {
+      display: none; flex-direction: column; gap: 0.4rem;
+      background: var(--white); border-bottom: 1px solid var(--slate-200); padding: 1rem;
+    }
+    .mobile-nav.open { display: flex; }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+    }
+
+    /* ---- MAIN ---- */
+    main { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem; }
+
+    .page { display: none; animation: fadeUp 0.4s ease both; }
+    .page.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--slate-200);
+      padding: 3rem 1.25rem;
+      background: var(--white);
+      text-align: center;
+    }
+    footer p { color: var(--slate-500); margin-bottom: 1rem; }
+    .footer-links { display: flex; justify-content: center; gap: 1.5rem; }
+    .footer-links a { color: var(--slate-400); text-decoration: none; transition: color 0.15s; }
+    .footer-links a:hover { color: var(--blue); }
+
+    /* ---- UTILITIES ---- */
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.3rem 0.75rem; border-radius: 999px;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+    }
+    .badge-blue { background: var(--blue-light); color: var(--blue); }
+    .badge-amber { background: var(--amber-light); color: #92400e; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.25rem 0.75rem; border-radius: 999px;
+      font-size: 0.8rem; font-weight: 600;
+    }
+    .tag-green { background: var(--green-light); color: #065f46; }
+    .tag-red { background: var(--red-light); color: #991b1b; }
+
+    h1 { font-family: var(--font-display); font-weight: 800; line-height: 1.15; }
+    h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.9rem 1.75rem; border-radius: 0.75rem;
+      font-weight: 700; font-size: 0.95rem; font-family: var(--font-body);
+      border: none; cursor: pointer; transition: all 0.18s; text-decoration: none;
+    }
+    .btn-primary { background: var(--blue); color: var(--white); box-shadow: 0 4px 14px rgba(37,99,235,0.2); }
+    .btn-primary:hover { background: var(--blue-dark); transform: scale(1.03); }
+    .btn-dark { background: var(--slate-900); color: var(--white); }
+    .btn-dark:hover { background: var(--slate-800); transform: scale(1.03); }
+    .btn-white { background: var(--white); color: var(--blue); }
+    .btn-white:hover { background: var(--blue-light); transform: scale(1.03); }
+    .btn-full { width: 100%; justify-content: center; }
+
+    .card {
+      background: var(--white); border: 1px solid var(--slate-200);
+      border-radius: 1.25rem; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+    .step-num {
+      flex-shrink: 0; width: 2.5rem; height: 2.5rem;
+      background: var(--blue); color: var(--white);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem; font-family: var(--font-display);
+    }
+
+    /* ---- BLOG PAGE ---- */
+    .blog-header { text-align: center; margin-bottom: 2.5rem; }
+    .blog-header h1 { font-size: clamp(1.8rem, 5vw, 3rem); margin: 0.5rem 0 0.75rem; }
+    .blog-header p { color: var(--slate-500); font-size: 1.05rem; }
+
+    .alert-red {
+      background: var(--red-light); border-left: 4px solid var(--red);
+      padding: 1.5rem; border-radius: 0 0.75rem 0.75rem 0; margin-bottom: 2.5rem;
+    }
+    .alert-red h2 { color: #7f1d1d; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .alert-red p, .alert-red li { color: #991b1b; }
+    .alert-red ul { margin: 0.75rem 0 0 1rem; space: 0.25rem; }
+    .alert-red li { margin-bottom: 0.25rem; }
+    .alert-red .bold-last { margin-top: 1rem; font-weight: 700; color: #7f1d1d; }
+
+    .steps-grid { display: flex; flex-direction: column; gap: 2rem; }
+    .step-row { display: flex; gap: 1rem; }
+    .step-content { flex: 1; }
+    .step-content h3 { font-size: 1.2rem; margin-bottom: 0.4rem; }
+    .step-content p { color: var(--slate-600); margin-bottom: 0.75rem; }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.5rem; background: var(--white); padding: 1rem; border-radius: 0.75rem; border: 1px solid var(--slate-200); }
+    .pill-item { font-size: 0.85rem; font-weight: 600; color: var(--blue); }
+    .pill-sep { color: var(--slate-300); }
+
+    .code-block {
+      background: var(--slate-900); color: #e2e8f0;
+      padding: 1rem 1.25rem; border-radius: 0.75rem;
+      font-family: var(--font-mono); font-size: 0.875rem; font-style: italic;
+    }
+
+    /* Email CTA */
+    .email-cta {
+      background: var(--blue); border-radius: 1.5rem;
+      padding: 2.5rem 2rem; text-align: center;
+      color: var(--white); position: relative; overflow: hidden;
+      margin: 2.5rem 0;
+    }
+    .email-cta h3 { font-size: 1.4rem; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .email-cta p { color: rgba(255,255,255,0.8); max-width: 400px; margin: 0 auto 2rem; }
+    .email-cta .cta-row { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center; }
+    .email-box {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.12); padding: 0.5rem 0.75rem 0.5rem 1rem;
+      border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.25);
+    }
+    .email-box span { font-family: var(--font-mono); font-size: 0.85rem; }
+    .copy-btn {
+      background: none; border: none; cursor: pointer; padding: 0.4rem;
+      border-radius: 0.4rem; color: var(--white); transition: background 0.15s;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,0.15); }
+    .email-cta .note { margin-top: 1.25rem; font-size: 0.75rem; color: rgba(255,255,255,0.6); }
+    .deco-circle {
+      position: absolute; border-radius: 50%; pointer-events: none;
+    }
+    .deco-tr { top: -40px; right: -40px; width: 160px; height: 160px; background: rgba(255,255,255,0.08); }
+    .deco-bl { bottom: -40px; left: -40px; width: 160px; height: 160px; background: rgba(0,0,0,0.1); }
+
+    .offer-box {
+      background: var(--slate-100); border: 2px dashed var(--slate-300);
+      border-radius: 1.5rem; padding: 2.5rem; text-align: center;
+    }
+    .offer-box h3 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .offer-box p { color: var(--slate-600); margin-bottom: 1.5rem; }
+
+    /* ---- LISTICLE PAGE ---- */
+    .list-header { text-align: center; margin-bottom: 2.5rem; }
+    .list-header h1 { font-size: clamp(1.8rem, 5vw, 3rem); margin-bottom: 0.4rem; }
+    .list-header p { color: var(--slate-500); font-style: italic; }
+    .list-intro { font-size: 1.05rem; color: var(--slate-600); text-align: center; margin-bottom: 2rem; }
+
+    .tool-card { margin-bottom: 1.5rem; }
+    .tool-bar { height: 6px; }
+    .tool-body { padding: 1.5rem; }
+    .tool-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .tool-num { font-family: var(--font-mono); font-size: 1.4rem; color: var(--slate-300); margin-right: 0.5rem; }
+    .tool-name { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; }
+    .tool-pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 500px) { .tool-pros-cons { grid-template-columns: 1fr; } }
+    .pro-box { display: flex; align-items: flex-start; gap: 0.5rem; background: var(--green-light); padding: 0.75rem; border-radius: 0.6rem; color: #065f46; font-size: 0.9rem; }
+    .con-box { display: flex; align-items: flex-start; gap: 0.5rem; background: var(--red-light); padding: 0.75rem; border-radius: 0.6rem; color: #991b1b; font-size: 0.9rem; }
+
+    .alert-amber {
+      background: var(--amber-light); border-left: 4px solid var(--amber);
+      padding: 1.25rem 1.5rem; border-radius: 0 0.75rem 0.75rem 0; margin: 2.5rem 0;
+    }
+    .alert-amber h4 { display: flex; align-items: center; gap: 0.5rem; color: #78350f; margin-bottom: 0.4rem; }
+    .alert-amber p { color: #92400e; font-weight: 500; }
+
+    .gradient-cta {
+      background: linear-gradient(135deg, #1d4ed8, #4338ca);
+      border-radius: 1.5rem; padding: 3rem 2rem; text-align: center; color: var(--white);
+      box-shadow: 0 8px 32px rgba(37,99,235,0.25);
+    }
+    .gradient-cta h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .gradient-cta p { color: rgba(255,255,255,0.75); margin-bottom: 2rem; }
+
+    /* ---- COMPARISON PAGE ---- */
+    .comp-header { text-align: center; margin-bottom: 2.5rem; }
+    .comp-header h1 { font-size: clamp(1.6rem, 4.5vw, 2.8rem); }
+
+    .tool-cards-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+    @media (max-width: 480px) { .tool-cards-row { grid-template-columns: 1fr; } }
+    .tool-highlight {
+      background: var(--white); border-radius: 1.25rem; padding: 1.5rem; text-align: center;
+      border: 2px solid; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .tool-highlight.orange { border-color: #fed7aa; }
+    .tool-highlight.green { border-color: #a7f3d0; }
+    .icon-wrap {
+      display: inline-flex; padding: 0.75rem; border-radius: 50%; margin-bottom: 0.75rem;
+    }
+    .icon-wrap.orange { background: #fff7ed; color: var(--orange); }
+    .icon-wrap.green { background: var(--green-light); color: var(--green); }
+    .tool-highlight h3 { font-size: 1.15rem; margin-bottom: 0.4rem; }
+    .tool-highlight p { color: var(--slate-600); font-size: 0.9rem; }
+
+    .comp-table-wrap { background: var(--white); border-radius: 1.25rem; border: 1px solid var(--slate-200); overflow: hidden; margin-bottom: 2.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--slate-50); border-bottom: 1px solid var(--slate-200); }
+    th { padding: 1rem 1.5rem; text-align: left; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
+    th:nth-child(2) { color: #065f46; }
+    th:nth-child(3) { color: #c2410c; }
+    tbody tr { border-bottom: 1px solid var(--slate-100); }
+    tbody tr:last-child { border-bottom: none; }
+    td { padding: 0.9rem 1.5rem; font-size: 0.9rem; }
+    td:first-child { font-weight: 600; }
+    td.bold { font-weight: 700; }
+    td.accent { font-weight: 700; color: var(--orange); }
+
+    .use-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem; }
+    @media (max-width: 480px) { .use-grid { grid-template-columns: 1fr; } }
+    .use-col h3 { font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .use-col ul { list-style: none; color: var(--slate-600); }
+    .use-col li { padding: 0.25rem 0; font-size: 0.9rem; }
+    .use-col li::before { content: "→ "; color: var(--slate-400); }
+
+    .dark-cta {
+      background: var(--slate-900); border-radius: 1.5rem;
+      padding: 2.5rem 2rem; text-align: center; color: var(--white);
+    }
+    .dark-cta .sub-badge {
+      display: inline-block; padding: 0.25rem 0.75rem;
+      background: rgba(255,255,255,0.1); border-radius: 999px;
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      color: #93c5fd; margin-bottom: 1rem;
+    }
+    .dark-cta h3 { font-size: 1.4rem; font-style: italic; margin-bottom: 1.5rem; }
+
+    /* ---- PRODUCT PAGE ---- */
+    .product-layout { display: flex; gap: 3rem; align-items: flex-start; }
+    .product-main { flex: 1; min-width: 0; }
+    .product-sidebar { width: 300px; flex-shrink: 0; }
+    @media (max-width: 768px) {
+      .product-layout { flex-direction: column; }
+      .product-sidebar { width: 100%; }
+    }
+
+    .product-header { margin-bottom: 2rem; }
+    .price-row { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
+    .price-main { font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: var(--blue); }
+    .price-old { font-size: 1.1rem; color: var(--slate-300); text-decoration: line-through; }
+    .save-badge { background: var(--red); color: var(--white); font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 0.35rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .trust-box {
+      background: var(--green-light); border: 1px solid #a7f3d0;
+      border-radius: 1.25rem; padding: 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04); margin-bottom: 2rem;
+    }
+    .trust-box svg { color: var(--green); flex-shrink: 0; margin-top: 2px; }
+    .trust-box h3 { font-size: 1rem; color: #065f46; margin-bottom: 0.25rem; }
+    .trust-box p { color: #047857; font-size: 0.85rem; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 2rem; }
+    .stat-box { background: var(--white); border: 1px solid var(--slate-100); border-radius: 0.75rem; padding: 1rem; text-align: center; }
+    .stat-box svg { margin: 0 auto 0.4rem; display: block; }
+    .stat-box .stat-num { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; }
+    .stat-box .stat-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--slate-400); }
+
+    .contents-title { font-size: 1.8rem; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+    .content-item { background: var(--white); border: 1px solid var(--slate-200); border-radius: 1.25rem; overflow: hidden; margin-bottom: 1.25rem; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: box-shadow 0.2s; }
+    .content-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .content-body { padding: 1.5rem; }
+    .content-head { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+    .content-idx {
+      flex-shrink: 0; width: 2rem; height: 2rem;
+      background: var(--blue); color: var(--white);
+      border-radius: 0.4rem; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.8rem; font-family: var(--font-display);
+    }
+    .content-title { font-size: 1.1rem; color: var(--slate-900); margin-bottom: 0.1rem; }
+    .content-tagline { color: var(--blue); font-size: 0.8rem; font-weight: 600; font-style: italic; }
+    .content-desc { color: var(--slate-600); font-size: 0.875rem; line-height: 1.6; margin-bottom: 1rem; }
+    .content-bullets { background: var(--slate-50); border-radius: 0.75rem; padding: 1rem; }
+    .bullets-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--slate-400); margin-bottom: 0.75rem; }
+    .bullets-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 0.5rem; }
+    .bullet-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--slate-700); }
+
+    .bonus-box { background: var(--slate-900); border-radius: 1.25rem; padding: 2rem; color: var(--white); margin-top: 2rem; }
+    .bonus-label { display: flex; align-items: center; gap: 0.5rem; color: #93c5fd; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1.5rem; }
+    .bonus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 480px) { .bonus-grid { grid-template-columns: 1fr; } }
+    .bonus-item { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 1rem; }
+    .bonus-name { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.35rem; }
+    .bonus-name.yellow { color: #fbbf24; }
+    .bonus-name.blue { color: #60a5fa; }
+    .bonus-desc { color: var(--slate-400); font-size: 0.75rem; font-style: italic; }
+
+    /* Sidebar */
+    .sticky-sidebar { position: sticky; top: 84px; }
+    .checkout-card {
+      background: var(--white); border: 2px solid var(--blue);
+      border-radius: 1.5rem; padding: 2rem; position: relative; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(37,99,235,0.15);
+    }
+    .secure-tag {
+      position: absolute; top: 0; right: 0;
+      background: var(--blue); color: var(--white);
+      padding: 0.3rem 0.6rem; border-radius: 0 0 0 0.6rem;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 0.25rem;
+    }
+    .checkout-title { font-size: 1.1rem; text-align: center; margin-bottom: 1.5rem; }
+    .price-highlight {
+      background: var(--blue-light); padding: 1rem; border-radius: 0.75rem;
+      border: 2px solid var(--blue-mid); text-align: center; position: relative; margin-bottom: 1.5rem;
+    }
+    .price-highlight .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; color: var(--blue); margin-bottom: 0.25rem; }
+    .price-highlight .amount { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: #1d4ed8; }
+    .off-badge {
+      position: absolute; top: -8px; right: -8px;
+      background: var(--red); color: var(--white);
+      font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.5rem;
+      border-radius: 999px; box-shadow: 0 2px 6px rgba(239,68,68,0.4);
+    }
+    .gcash-box {
+      background: var(--slate-50); padding: 0.75rem; border-radius: 0.6rem;
+      border: 1px solid var(--slate-200); margin-bottom: 1.5rem;
+    }
+    .gcash-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; color: var(--slate-400); margin-bottom: 0.35rem; }
+    .gcash-num { font-family: var(--font-mono); font-weight: 700; font-size: 0.9rem; }
+    .gcash-name { font-size: 0.8rem; color: var(--slate-500); }
+    .checkout-features { border-top: 1px solid var(--slate-100); padding-top: 1rem; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .checkout-feature { display: flex; align-items: flex-start; gap: 0.5rem; color: var(--slate-600); }
+    .checkout-feature p { font-size: 0.75rem; line-height: 1.4; }
+    .checkout-feature strong { color: var(--slate-800); }
+
+    .social-proof {
+      margin-top: 1.5rem; background: var(--white); border: 1px solid var(--slate-200);
+      border-radius: 0.75rem; padding: 1rem; display: flex; align-items: center; gap: 0.75rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .sp-icon { width: 2.5rem; height: 2.5rem; background: var(--green-light); color: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sp-title { font-size: 0.8rem; font-weight: 700; }
+    .sp-sub { font-size: 0.7rem; color: var(--slate-500); }
+
+    .free-link { display: block; text-align: center; margin-top: 1.25rem; color: var(--slate-400); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: color 0.15s; background: none; border: none; width: 100%; }
+    .free-link:hover { color: var(--slate-600); }
+    .contact-row { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.8rem; color: var(--slate-700); text-decoration: none; padding: 0.45rem 0.6rem; border-radius: 0.5rem; transition: background 0.15s; }
+    .contact-row:hover { background: var(--slate-200); }
+    .contact-row svg { margin-top: 1px; flex-shrink: 0; }
+
+    /* SVG inline icons */
+    svg.icon { display: inline-block; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      AI-STEM Hub
+    </a>
+    <div class="nav-links" id="desktopNav">
+      <button class="nav-btn active" data-page="blog">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Blog
+      </button>
+      <button class="nav-btn" data-page="listicle">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Top Tools
+      </button>
+      <button class="nav-btn" data-page="comparison">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        Comparison
+      </button>
+      <button class="nav-btn" data-page="product">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.89 1.45l8 4A2 2 0 0 1 22 7.24v9.53a2 2 0 0 1-1.11 1.79l-8 4a2 2 0 0 1-1.79 0l-8-4a2 2 0 0 1-1.1-1.8V7.24a2 2 0 0 1 1.11-1.79l8-4a2 2 0 0 1 1.78 0z"/></svg>
+        Product
+      </button>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <svg id="menuIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <button class="nav-btn active" data-page="blog">Blog</button>
+    <button class="nav-btn" data-page="listicle">Top Tools</button>
+    <button class="nav-btn" data-page="comparison">Comparison</button>
+    <button class="nav-btn" data-page="product">Product</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ===== BLOG PAGE ===== -->
+  <div class="page active" id="page-blog">
+    <div class="blog-header">
+      <span class="badge badge-blue">Study Strategy</span>
+      <h1>How to Use AI for Math Without Getting Wrong Answers</h1>
+      <p>Stop copy-pasting and start learning with the AI-STEM Framework.</p>
+    </div>
+
+    <div class="alert-red">
+      <h2>
+        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        The Problem
+      </h2>
+      <p>Most students use AI the wrong way. They copy-paste a math problem and trust the answer immediately.</p>
+      <ul>
+        <li>Answers are wrong</li>
+        <li>Logic is missing</li>
+        <li>You fail exams</li>
+      </ul>
+      <p class="bold-last">AI is not broken. Your method is.</p>
+    </div>
+
+    <section>
+      <h2 style="font-size:1.5rem;margin-bottom:1.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--slate-200);">The Correct Way: 3-Step AI-STEM Framework</h2>
+
+      <div class="steps-grid">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Step 1 — Break the Problem</h3>
+            <p>Before using AI, rewrite the problem manually to prevent confusion:</p>
+            <div class="pill-row">
+              <span class="pill-item">GIVEN values</span>
+              <span class="pill-sep">·</span>
+              <span class="pill-item">ASKED goals</span>
+              <span class="pill-sep">·</span>
+              <span class="pill-item">FORMULA concept</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Step 2 — Guide AI Properly</h3>
+            <p>Never ask "solve this". Use this exact prompt to force reasoning:</p>
+            <div class="code-block">"Solve step-by-step. Explain each formula. Do not skip logic."</div>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Step 3 — Verify Everything</h3>
+            <p>AI is not a calculator; it's a language model. Always check:</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem;">
+              <span class="tag tag-green">
+                <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Units
+              </span>
+              <span class="tag tag-green">
+                <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Formula used
+              </span>
+              <span class="tag tag-green">
+                <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Manual calc check
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Email CTA -->
+    <div class="email-cta">
+      <div class="deco-circle deco-tr"></div>
+      <div class="deco-circle deco-bl"></div>
+      <h3>
+        <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Get Your Discount & Freebies
+      </h3>
+      <p>Email me to get a <strong style="color:#fff;text-decoration:underline;text-decoration-color:rgba(147,197,253,0.6);">discount and free code</strong>, plus giveaway notifications whenever a new product is released!</p>
+      <div class="cta-row">
+        <a href="mailto:pauljancen485@gmail.com?subject=Subscribe for Discounts and Giveaways" class="btn btn-white">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Email Me Now
+        </a>
+        <div class="email-box">
+          <span>pauljancen485@gmail.com</span>
+          <button class="copy-btn" id="copyBtn" title="Copy email" onclick="copyEmail()">
+            <svg id="copyIcon" class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+      <p class="note">I'll reply with your codes as soon as possible.</p>
+    </div>
+
+    <div class="offer-box">
+      <h3>💰 Limited Time Offer</h3>
+      <p>Get exact prompts, ready-to-use workflows, and zero guessing for a huge discount.</p>
+      <button class="btn btn-dark goto-product">Get STEM The Unfair System (₱99 ONLY)</button>
+    </div>
+  </div>
+
+  <!-- ===== LISTICLE PAGE ===== -->
+  <div class="page" id="page-listicle">
+    <div class="list-header">
+      <h1>Top 5 AI Tools for STEM Students</h1>
+      <p>(2026 Guide)</p>
+    </div>
+    <p class="list-intro">AI can help you study faster—but only if you use the right tools for the job.</p>
+
+    <div id="toolsList"></div>
+
+    <div class="alert-amber">
+      <h4>
+        <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Important Note
+      </h4>
+      <p>Tools don't matter if your prompts are bad. Technology is just a lever; your strategy is the force.</p>
+    </div>
+
+    <div class="gradient-cta">
+      <h3>Want the exact prompts + system?</h3>
+      <p>Grab it while it's still on sale for ₱99!</p>
+      <button class="btn btn-white goto-product" style="font-size:1rem;">Get STEM The Unfair System (₱99)</button>
+    </div>
+  </div>
+
+  <!-- ===== COMPARISON PAGE ===== -->
+  <div class="page" id="page-comparison">
+    <div class="comp-header">
+      <h1>ChatGPT vs Claude for Math:<br>Which One is Actually Better?</h1>
+    </div>
+
+    <div class="tool-cards-row">
+      <div class="tool-highlight orange">
+        <div class="icon-wrap orange">
+          <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>Claude</h3>
+        <p>Better for <strong style="color:var(--orange)">Reasoning</strong> and logic chains.</p>
+      </div>
+      <div class="tool-highlight green">
+        <div class="icon-wrap green">
+          <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h3>ChatGPT</h3>
+        <p>Better for <strong style="color:var(--green)">Explanations</strong> and broad context.</p>
+      </div>
+    </div>
+
+    <div class="comp-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>ChatGPT</th>
+            <th>Claude</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Accuracy</td><td>Medium</td><td class="bold">High</td></tr>
+          <tr><td>Explanation</td><td class="bold">Strong</td><td class="bold">Strong</td></tr>
+          <tr><td>Math Logic</td><td>Weak</td><td class="accent">Better</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="use-grid">
+      <div class="use-col">
+        <h3>
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Use ChatGPT:
+        </h3>
+        <ul>
+          <li>Concept explanation</li>
+          <li>Simple problems</li>
+          <li>Flashcard generation</li>
+        </ul>
+      </div>
+      <div class="use-col">
+        <h3>
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Use Claude:
+        </h3>
+        <ul>
+          <li>Step-by-step solving</li>
+          <li>Complex calculus/physics</li>
+          <li>Error debugging</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="dark-cta">
+      <div class="sub-badge">Flash Sale</div>
+      <h3>Get the prompts for only ₱99 today.</h3>
+      <button class="btn btn-primary goto-product">Get STEM The Unfair System (₱99)</button>
+    </div>
+  </div>
+
+  <!-- ===== PRODUCT PAGE ===== -->
+  <div class="page" id="page-product">
+    <div class="product-layout">
+      <div class="product-main">
+        <div class="product-header">
+          <span class="badge badge-amber">⭐ LIMITED DISCOUNT: -80% OFF</span>
+          <h1 style="font-size:clamp(2rem,5vw,3rem);margin-top:0.75rem;">STEM The Unfair System</h1>
+          <div class="price-row">
+            <span class="price-main">₱99</span>
+            <span class="price-old">₱499</span>
+            <span class="save-badge">Save ₱400</span>
+          </div>
+        </div>
+
+        <div class="trust-box">
+          <svg class="icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          <div>
+            <h3>Tested & Verified System</h3>
+            <p>This isn't just a list of links. Every prompt in this system has been stress-tested by real engineering and math students to ensure 100% logic accuracy. No hallucinations. No guesswork.</p>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <div class="stat-num">1,200+</div>
+            <div class="stat-label">Students</div>
+          </div>
+          <div class="stat-box">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <div class="stat-num">4.9/5</div>
+            <div class="stat-label">Rating</div>
+          </div>
+          <div class="stat-box">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="stat-num">100%</div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+        </div>
+
+        <h2 class="contents-title">
+          <svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M12.89 1.45l8 4A2 2 0 0 1 22 7.24v9.53a2 2 0 0 1-1.11 1.79l-8 4a2 2 0 0 1-1.79 0l-8-4a2 2 0 0 1-1.1-1.8V7.24a2 2 0 0 1 1.11-1.79l8-4a2 2 0 0 1 1.78 0z"/></svg>
+          What's Inside
+        </h2>
+        <div id="contentsList"></div>
+
+        <div class="bonus-box">
+          <div class="bonus-label">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z"/><path d="M12 8v4l3 3"/></svg>
+            Bonus Workflows Included
+          </div>
+          <div class="bonus-grid">
+            <div class="bonus-item">
+              <div class="bonus-name yellow">
+                <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                AI Solving System
+              </div>
+              <p class="bonus-desc">Advanced step-by-step logic framework for complex problems.</p>
+            </div>
+            <div class="bonus-item">
+              <div class="bonus-name blue">
+                <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Error-Checking System
+              </div>
+              <p class="bonus-desc">Multi-step verification layer to catch AI hallucinations instantly.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="product-sidebar">
+        <div class="sticky-sidebar">
+          <div class="checkout-card">
+            <div class="secure-tag">
+              <svg class="icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Secure Checkout
+            </div>
+            <h3 class="checkout-title">💳 Claim Your Discount</h3>
+            <div class="price-highlight">
+              <div class="label">Limited Sale Price</div>
+              <div class="amount">₱99</div>
+              <div class="off-badge">80% OFF</div>
+            </div>
+            <div class="gcash-box">
+              <div class="gcash-label">Contact Us To Inquire</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.25rem;">
+                <a href="https://www.facebook.com/jancen.deguzman" target="_blank" class="contact-row">
+                  <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="#1877f2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                  <span>Message <strong>Jancen De Guzman</strong> on Facebook & Messenger</span>
+                </a>
+                <a href="https://t.me/+639541877587" target="_blank" class="contact-row">
+                  <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="#229ed9"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.7 8.02c-.13.57-.47.71-.95.44l-2.6-1.92-1.26 1.21c-.14.14-.26.26-.53.26l.19-2.67 4.84-4.37c.21-.19-.05-.29-.32-.1L8.34 14.9l-2.55-.8c-.55-.17-.56-.55.12-.82l9.96-3.84c.46-.17.86.11.77.36z"/></svg>
+                  <span>Telegram: <strong>09541877587</strong></span>
+                </a>
+              </div>
+            </div>
+            <a href="https://www.facebook.com/jancen.deguzman" target="_blank" class="btn btn-primary btn-full" style="margin-bottom:1rem;text-decoration:none;">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Inquire Now
+            </a>
+            <div class="checkout-features">
+              <div class="checkout-feature">
+                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                <p><strong>Safety Guarantee:</strong> Your access link is sent instantly after proof is verified.</p>
+              </div>
+              <div class="checkout-feature">
+                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <p><strong>Instant Support:</strong> Direct contact for any access issues. 24/7 Response.</p>
+              </div>
+            </div>
+          </div>
+          <div class="social-proof">
+            <div class="sp-icon">
+              <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            </div>
+            <div>
+              <div class="sp-title">Scared to pay first?</div>
+              <div class="sp-sub">We've served 1,200+ students. Join our community and see the receipts!</div>
+            </div>
+          </div>
+          <button class="free-link">Still unsure? Get the FREE checklist first →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>© 2026 AI-STEM Education. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Support</a>
+  </div>
+</footer>
+
+<script>
+  // ---- DATA ----
+  const tools = [
+    { name: 'ChatGPT', pros: 'Good for explanations', cons: 'Sometimes wrong in math', color: '#10b981' },
+    { name: 'Claude', pros: 'Better step-by-step reasoning', cons: 'Slower sometimes', color: '#f97316' },
+    { name: 'Gemini', pros: 'Free and fast', cons: 'Can hallucinate', color: '#2563eb' },
+    { name: 'Wolfram Alpha', pros: 'Accurate math engine', cons: 'Not conversational', color: '#ef4444' },
+    { name: 'Photomath', pros: 'Quick solving', cons: 'Limited explanations', color: '#ec4899' },
+  ];
+
+  const contents = [
+    { title: "Quick Start Guide", tagline: "Get started fast without confusion.", description: "A simple, step-by-step guide that shows you exactly how to begin and what to do first. No fluff—just the essential actions to move from zero to progress.", bullets: ["Clear step-by-step instructions", "Beginner-friendly breakdown", "Immediate action plan"] },
+    { title: "Command Library", tagline: "Copy, paste, and execute.", description: "A collection of ready-to-use scripts and AI prompts so you don't have to think about what to say or do. Just plug in and start getting results.", bullets: ["High-performing prompts", "Scripts for real scenarios", "Organized, easy-to-use commands"] },
+    { title: "System Blueprint", tagline: "See the full system and how it works.", description: "A structured breakdown of the entire process from start to finish so you understand exactly how to achieve the result efficiently.", bullets: ["Complete step-by-step framework", "Strategy and flow of execution", "Clear path to the outcome"] },
+    { title: "Execution Checklist", tagline: "Just follow and get it done.", description: "A simple checklist that tells you exactly what to do, in order. Perfect for staying consistent and making sure nothing is missed.", bullets: ["Daily or step-by-step checklist", "Action-focused tasks", "Easy-to-follow structure"] },
+    { title: "Fast Track", tagline: "Skip the noise. Get results faster.", description: "A shortcut version of the system showing only the highest-impact actions to achieve results in the least amount of time.", bullets: ["Condensed execution plan", "High-impact actions only", "Speed-focused strategy"] },
+    { title: "Unfair Advantage Layer", tagline: "Gain the edge most people don't have.", description: "Advanced tactics, insights, and tools that give you a competitive advantage and improve your results significantly.", bullets: ["Advanced strategies", "High-level insights", "Optimization techniques"] },
+    { title: "Full Bundle", tagline: "Everything you need in one complete system.", description: "Get the full package with every guide, tool, and resource combined into one powerful execution system designed to deliver results from start to finish.", bullets: ["All products included", "Complete system access", "Maximum value and results"] },
+  ];
+
+  // ---- RENDER TOOLS ----
+  const toolsList = document.getElementById('toolsList');
+  tools.forEach((tool, idx) => {
+    toolsList.innerHTML += `
+      <div class="card tool-card">
+        <div class="tool-bar" style="background:${tool.color}"></div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <span class="tool-num">0${idx + 1}</span>
+              <span class="tool-name">${tool.name}</span>
+            </div>
+          </div>
+          <div class="tool-pros-cons">
+            <div class="pro-box">
+              <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>${tool.pros}</span>
+            </div>
+            <div class="con-box">
+              <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              <span>${tool.cons}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  // ---- RENDER CONTENTS ----
+  const contentsList = document.getElementById('contentsList');
+  const checkSVG = `<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+  contents.forEach((item, index) => {
+    contentsList.innerHTML += `
+      <div class="content-item">
+        <div class="content-body">
+          <div class="content-head">
+            <div class="content-idx">${index + 1}</div>
+            <div>
+              <div class="content-title">${item.title}</div>
+              <div class="content-tagline">${item.tagline}</div>
+            </div>
+          </div>
+          <p class="content-desc">${item.description}</p>
+          <div class="content-bullets">
+            <div class="bullets-label">You'll get:</div>
+            <div class="bullets-list">
+              ${item.bullets.map(b => `<div class="bullet-item">${checkSVG}<span>${b}</span></div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  // ---- NAVIGATION ----
+  function navigateTo(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
+    document.querySelectorAll(`[data-page="${pageId}"]`).forEach(b => b.classList.add('active'));
+    document.getElementById('mobileNav').classList.remove('open');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('[data-page]').forEach(btn => {
+    btn.addEventListener('click', () => navigateTo(btn.dataset.page));
+  });
+
+  document.querySelectorAll('.goto-product').forEach(btn => {
+    btn.addEventListener('click', () => navigateTo('product'));
+  });
+
+  // ---- HAMBURGER ----
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileNav').classList.toggle('open');
+  });
+
+  // ---- COPY EMAIL ----
+  function copyEmail() {
+    navigator.clipboard.writeText('pauljancen485@gmail.com').catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = 'pauljancen485@gmail.com';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    });
+    const btn = document.getElementById('copyBtn');
+    btn.innerHTML = `<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+    setTimeout(() => {
+      btn.innerHTML = `<svg id="copyIcon" class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+    }, 2000);
+  }
+</script>
+</body>
+</html>
